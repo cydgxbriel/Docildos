@@ -1,73 +1,188 @@
-# Welcome to your Lovable project
+# Docildos
 
-## Project info
+Sistema de gestão de confeitaria com inteligência artificial, desenvolvido para auxiliar na administração de pedidos, receitas, estoque e planejamento de produção.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🎯 Sobre o Projeto
 
-## How can I edit this code?
+Docildos é uma aplicação full-stack que combina uma interface moderna em React com uma API robusta em FastAPI e um serviço de IA baseado em LangGraph para orquestração de agentes. O sistema permite gerenciar todos os aspectos de uma confeitaria através de uma interface conversacional intuitiva.
 
-There are several ways of editing your application.
+## 🚀 Tecnologias
 
-**Use Lovable**
+### Frontend
+- **React 18** - Biblioteca JavaScript para construção de interfaces
+- **TypeScript** - Tipagem estática para JavaScript
+- **Vite** - Build tool e dev server
+- **shadcn/ui** - Componentes de UI acessíveis
+- **Tailwind CSS** - Framework CSS utility-first
+- **React Router** - Roteamento para aplicações React
+- **TanStack Query** - Gerenciamento de estado do servidor
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de schemas
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Backend
+- **FastAPI** - Framework web moderno e rápido para Python
+- **SQLAlchemy** - ORM para Python
+- **Alembic** - Ferramenta de migração de banco de dados
+- **Pydantic** - Validação de dados usando type hints
+- **PostgreSQL** - Banco de dados relacional
 
-Changes made via Lovable will be committed automatically to this repo.
+### AI Service
+- **LangGraph** - Framework para construção de aplicações com LLMs
+- **OpenAI API** - Integração com modelos de linguagem
 
-**Use your preferred IDE**
+### Infraestrutura
+- **Docker** - Containerização do banco de dados
+- **Docker Compose** - Orquestração de containers
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📋 Pré-requisitos
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Antes de começar, certifique-se de ter instalado:
 
-Follow these steps:
+- **Node.js** (versão 18 ou superior) e npm
+- **Python** (versão 3.10 ou superior)
+- **Docker** e Docker Compose
+- **Git**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🛠️ Instalação e Configuração
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Para um guia detalhado de instalação, consulte o arquivo [SETUP.md](./SETUP.md).
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Passo a Passo Rápido
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+1. **Clone o repositório**
+```bash
+git clone https://github.com/cydgxbriel/Docildos.git
+cd Docildos
+```
+
+2. **Configure o banco de dados**
+```bash
+docker-compose up -d postgres
+```
+
+Aguarde aproximadamente 10 segundos para o PostgreSQL inicializar.
+
+3. **Configure o Backend**
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edite o arquivo .env com suas configurações, especialmente OPENAI_API_KEY
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+4. **Configure o AI Service** (em outro terminal)
+```bash
+cd ai-service
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edite o arquivo .env com OPENAI_API_KEY e BACKEND_API_URL=http://localhost:8000
+```
+
+5. **Configure o Frontend** (em outro terminal)
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## ✅ Verificação
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Após seguir os passos acima, verifique se tudo está funcionando:
 
-**Use GitHub Codespaces**
+1. **Backend**: Acesse http://localhost:8000/docs para ver a documentação interativa da API
+2. **Frontend**: Acesse http://localhost:8080 (ou a porta indicada no terminal)
+3. **Teste o chat**: Tente enviar uma mensagem como "Me mostra os pedidos de hoje"
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📁 Estrutura do Projeto
 
-## What technologies are used for this project?
+```
+Docildos/
+├── ai-service/          # Serviço de IA com LangGraph
+│   ├── agents/         # Agentes e ferramentas
+│   └── graph.py        # Grafo LangGraph principal
+├── backend/            # API FastAPI
+│   ├── app/
+│   │   ├── api/        # Endpoints REST
+│   │   ├── models/     # Modelos SQLAlchemy
+│   │   ├── schemas/    # Schemas Pydantic
+│   │   ├── services/   # Lógica de negócio
+│   │   └── db/         # Configuração do banco
+│   └── alembic/        # Migrações do banco
+├── src/                # Código fonte do frontend
+│   ├── components/     # Componentes React
+│   ├── pages/          # Páginas da aplicação
+│   ├── hooks/          # Custom hooks
+│   └── lib/            # Utilitários
+├── public/             # Arquivos estáticos
+└── docker-compose.yml  # Configuração Docker
+```
 
-This project is built with:
+## 🔧 Scripts Disponíveis
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Frontend
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Cria build de produção
+- `npm run lint` - Executa o linter
+- `npm run preview` - Preview do build de produção
 
-## How can I deploy this project?
+### Backend
+- `uvicorn app.main:app --reload` - Inicia o servidor de desenvolvimento
+- `alembic upgrade head` - Aplica migrações do banco
+- `alembic revision --autogenerate -m "descrição"` - Cria nova migração
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 🐛 Solução de Problemas
 
-## Can I connect a custom domain to my Lovable project?
+### Erro de conexão com banco de dados
+- Verifique se o Docker está rodando: `docker ps`
+- Verifique se o PostgreSQL está ativo: `docker-compose ps`
+- Confirme as credenciais no arquivo `.env` do backend
 
-Yes, you can!
+### Erro de importação no backend
+- Certifique-se de que o `ai-service` está no mesmo nível que `backend`
+- Verifique se todas as dependências estão instaladas nos ambientes virtuais
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Erro de CORS
+- Verifique se o frontend está usando a porta correta (8080 ou 5173)
+- Adicione a porta no CORS do backend se necessário (arquivo `main.py`)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Reconhecimento de voz não funciona
+- Use Chrome ou Edge para melhor suporte à Web Speech API
+- Verifique as permissões do microfone no navegador
+
+## 📝 Variáveis de Ambiente
+
+### Backend (.env)
+```env
+DATABASE_URL=postgresql://docildos:docildos_dev@localhost:5432/docildos_db
+OPENAI_API_KEY=sua_chave_aqui
+```
+
+### AI Service (.env)
+```env
+OPENAI_API_KEY=sua_chave_aqui
+BACKEND_API_URL=http://localhost:8000
+```
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+## 👤 Autor
+
+**cydgxbriel**
+
+## 🔗 Links Úteis
+
+- [Documentação do FastAPI](https://fastapi.tiangolo.com/)
+- [Documentação do React](https://react.dev/)
+- [Documentação do LangGraph](https://langchain-ai.github.io/langgraph/)
+- [Documentação do shadcn/ui](https://ui.shadcn.com/)
