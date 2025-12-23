@@ -6,6 +6,18 @@ Sistema de gestão de confeitaria com inteligência artificial, desenvolvido par
 
 Docildos é uma aplicação full-stack que combina uma interface moderna em React com uma API robusta em FastAPI e um serviço de IA baseado em LangGraph para orquestração de agentes. O sistema permite gerenciar todos os aspectos de uma confeitaria através de uma interface conversacional intuitiva.
 
+### 💰 Otimização de Custos
+
+O Docildos foi projetado para operar com **custos mínimos** usando serviços open source:
+
+- **LLM Local Gratuito**: Usa Ollama (LLM local) por padrão, eliminando custos de API OpenAI
+- **Hosting Gratuito**: Configurado para Railway, Render, Vercel (free tiers)
+- **Banco Gratuito**: Suporte para Supabase, Neon, Railway PostgreSQL (free tiers)
+
+**Economia estimada**: $35-135+/mês → $0-5/mês (95-100% de redução)
+
+Consulte [COST_OPTIMIZATION.md](./COST_OPTIMIZATION.md) para detalhes completos.
+
 ## 🚀 Tecnologias
 
 ### Frontend
@@ -28,7 +40,8 @@ Docildos é uma aplicação full-stack que combina uma interface moderna em Reac
 
 ### AI Service
 - **LangGraph** - Framework para construção de aplicações com LLMs
-- **OpenAI API** - Integração com modelos de linguagem
+- **Ollama** - LLM local gratuito (padrão)
+- **OpenAI API** - Integração opcional com modelos de linguagem (fallback)
 
 ### Infraestrutura
 - **Docker** - Containerização do banco de dados
@@ -40,8 +53,10 @@ Antes de começar, certifique-se de ter instalado:
 
 - **Node.js** (versão 18 ou superior) e npm
 - **Python** (versão 3.10 ou superior)
-- **Docker** e Docker Compose
+- **Docker** e Docker Compose (para desenvolvimento local)
 - **Git**
+
+**Nota**: Para produção com custos mínimos, você pode usar serviços gerenciados (Railway, Supabase) que não requerem Docker local.
 
 ## 🛠️ Instalação e Configuração
 
@@ -159,14 +174,27 @@ Docildos/
 ### Backend (.env)
 ```env
 DATABASE_URL=postgresql://docildos:docildos_dev@localhost:5432/docildos_db
-OPENAI_API_KEY=sua_chave_aqui
+CORS_ORIGINS=http://localhost:8080,http://localhost:5173
+ENVIRONMENT=development
 ```
 
 ### AI Service (.env)
 ```env
+# LLM Provider: 'ollama' (gratuito, padrão) ou 'openai' (pago)
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3:8b
+
+# OpenAI (opcional, apenas se LLM_PROVIDER=openai)
 OPENAI_API_KEY=sua_chave_aqui
+OPENAI_MODEL=gpt-4o-mini
+
 BACKEND_API_URL=http://localhost:8000
 ```
+
+**Importante**: Por padrão, o sistema usa **Ollama (gratuito)**. Para usar OpenAI, configure `LLM_PROVIDER=openai` e `OPENAI_API_KEY`.
+
+Consulte os arquivos `.env.example` em cada diretório para exemplos completos.
 
 ## 🤝 Contribuindo
 

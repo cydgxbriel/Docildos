@@ -1,12 +1,20 @@
 from typing import Literal, Annotated
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 import os
 from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
+# Carregar variáveis de ambiente primeiro
 load_dotenv()
+
+# Adicionar diretório pai ao path para imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from providers.factory import get_llm_provider
+from config import config
 
 # Tipos de nós do grafo
 NodeType = Literal[
@@ -25,12 +33,18 @@ class GraphState:
     requires_confirmation: bool = False
     confirmation_question: str = ""
 
-# Modelo LLM
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0,
-    api_key=os.getenv("OPENAI_API_KEY"),
-)
+# Modelo LLM - Usa provider abstraction (Ollama por padrão, OpenAI como fallback)
+try:
+    llm_provider = get_llm_provider(
+        provider=config.llm_provider,
+        model=config.llm_model,
+        temperature=config.llm_temperature
+    )
+    llm = llm_provider.get_llm()
+    print(f"✅ LLM Provider configurado: {config.llm_provider}")
+except Exception as e:
+    print(f"❌ Erro ao configurar LLM provider: {e}")
+    raise
 
 # Prompt do supervisor
 SUPERVISOR_PROMPT = """Você é um supervisor inteligente que analisa mensagens de usuários e decide qual ferramenta especializada deve ser chamada.

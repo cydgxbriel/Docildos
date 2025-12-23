@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import api_router
+from app.config import config
 
 app = FastAPI(
-    title="Docildos API",
-    description="API para gestão de confeitaria com IA",
-    version="1.0.0"
+    title=config.api_title,
+    description=config.api_description,
+    version=config.api_version
 )
 
-# CORS
+# CORS - Configurável via variável de ambiente
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:5173"],
+    allow_origins=config.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

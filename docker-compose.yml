@@ -5,19 +5,43 @@ services:
     image: postgres:15-alpine
     container_name: docildos_postgres
     environment:
-      POSTGRES_USER: docildos
-      POSTGRES_PASSWORD: docildos_dev
-      POSTGRES_DB: docildos_db
+      POSTGRES_USER: ${POSTGRES_USER:-docildos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docildos_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-docildos_db}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docildos"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-docildos}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: docildos_ollama
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    # Deploy apenas se tiver GPU (opcional, comentar se não tiver GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
 
 volumes:
   postgres_data:
+  ollama_data:
 
